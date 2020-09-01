@@ -226,7 +226,15 @@ const structureFaqItem = data => {
 		} // additional text NOT to include in structure data
   } */
 
-  const answer = data.answer || {};
+  if(!data || typeof data.question !== 'string'){
+    return null;
+  }
+
+  const answer = data.answer;
+
+  if(!answer || typeof answer.basic !== 'string'){
+    return null;
+  }
   
   const answerFormatted = 'string' && 
 	  answer.a1 && answer.href && answer.hrefText ?
@@ -262,7 +270,7 @@ const structureFaqItems = arr => {
     return {
       '@context': 'https://schema.org',
 		  '@type': 'FAQPage',
-      mainEntity: arr.map(q=>structureFaqItem(q)),
+      mainEntity: arr.map(q=>structureFaqItem(q)).filter(a=>a!==null),
     };
   }
 };
