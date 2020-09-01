@@ -1,0 +1,26 @@
+{
+  "name": "structured",
+  "version": "1.0.0",
+  "description": "Library for Structured Data",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradcgarner/structured.git"
+  },
+  "keywords": [
+    "structured",
+    "data"
+  ],
+  "author": "Brad C. Garner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bradcgarner/structured/issues"
+  },
+  "homepage": "https://github.com/bradcgarner/structured#readme",
+  "dependencies": {
+    "conjunction-junction": "^3.13.58"
+  }
+}
