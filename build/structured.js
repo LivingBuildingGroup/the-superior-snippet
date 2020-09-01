@@ -21,7 +21,9 @@ const parseTextFromHtml = body => {
 
   const bodyArrString2 = bodyArrString1.split('&nbsp;').join(' ');
 
-  return bodyArrString2;
+  const bodyWithoutSpecial = bodyArrString2.split('****').join(' ');
+
+  return bodyWithoutSpecial;
 };
 
 // @@@@@@@@@@@@@@@@@@@@@ NEWS ARTICLE @@@@@@@@@@@@@@@@
@@ -133,8 +135,8 @@ const structureBlogPost = (data, _config) => {
       height: 630,
       width: 1200
     },
-    datePublished: data.publlished,
-    dateModified: data.publlished,
+    datePublished: data.published,
+    dateModified: data.published, // COME BACK TO THIS AND TRACK SEPARATELY IF BUTTER WILL NOT ADD THIS FIELD
     author: {
       '@type': 'Person',
       name: `${author.first_name} ${author.last_name}`
@@ -200,7 +202,29 @@ const faqExample1 = {
 };
 
 const structureFaqItem = data => {
-  const answer = typeof data.answerHtml === 'string' && data.answerHtml.length > 0 ? `${data.answer} ${data.answerHtml}` : data.answer;
+  /* input: {
+    question: '', // just text, no formatting
+    answer: { 
+      basic: '',     // can include <br>, <ol>, <ul>, <li>, <strong>
+                     // live site parses; structured data uses verbatim
+  	a1: '',        // E.g. To learn more read // no formatting in any below
+  	href: '',      // https://www.example.com
+  	hrefText: '',  // this article
+  	a2: ''         // about green roof detention.
+  } // additional text NOT to include in structure data
+  } */
+
+  if (!data || typeof data.question !== 'string') {
+    return null;
+  }
+
+  const answer = data.answer;
+
+  if (!answer || typeof answer.basic !== 'string') {
+    return null;
+  }
+
+  const answerFormatted = 'string' && answer.a1 && answer.href && answer.hrefText ? `${answer.basic} <p>${answer.a1} <a href=${answer.href}>${answer.hrefText}</a> ${answer.a2 || ''}</p>` : answer.basic;
 
   return {
     '@type': 'Question',
@@ -208,7 +232,7 @@ const structureFaqItem = data => {
     acceptedAnswer: {
       '@type': 'Answer',
       //The full answer to the question. The answer may contain HTML content such as links and lists. Valid HTML tags include: <h1> through <h6>, <br>, <ol>, <ul>, <li>, <a>, <p>, <div>, <b>, <strong>, <i>, and <em>.
-      text: answer
+      text: answerFormatted
     }
   };
 };
@@ -216,23 +240,22 @@ const structureFaqItem = data => {
 const structureFaqItems = arr => {
   /* input: [
   {
-  	question: '', 
-  	answer: '', 
-  	answerHtml: '' // additional text to show ONLY in structured data
-  	answerNoStructure: { 
-  		text1: '',     // To learn more read
-  		href: '',      // https://www.example.com
-  		hrefText: '',  // this article
-  		text2: ''      // about green roof detention.
-  	} // additional text NOT to include in structure data
-   }
-  ] 
-  */
+      question: '', // just text, no formatting
+      answer: { 
+        basic: '',     // can include <br>, <ol>, <ul>, <li>, <strong>
+                      // live site parses; structured data uses verbatim
+        a1: '',        // E.g. To learn more read // no formatting in any below
+        href: '',      // https://www.example.com
+        hrefText: '',  // this article
+        a2: ''         // about green roof detention.
+      } // additional text NOT to include in structure data
+    }
+  ] */
   if (Array.isArray(arr)) {
     return {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      mainEntity: arr.map(q => structureFaqItem(q))
+      mainEntity: arr.map(q => structureFaqItem(q)).filter(a => a !== null)
     };
   }
 };
@@ -542,13 +565,15 @@ const structureHowTo = data => {
   supplies: [''],
   tools: [''],
    steps: [
+      // OPTION 1
   	{
   		name: 'Pull and tighten',
   		text: 'Pull the long end through that new loop and tighten to fit!',
   		url: 'https://example.com/tie#step5'
   		// single image
   		src: 'https://example.com/1x1/step5.jpg',
-  	},
+      },
+      // OPTION 2
   	{
   		name: 'Pull and tighten',
   		list: itemListElement: [ '' ]
@@ -659,7 +684,7 @@ const terminologyExample1 = [{
   sameAs: 'https://en.wikipedia.org/wiki/Coal'
 }];
 
-const structureTerm = (term, termSet) => {
+const structureTerm = (term, termSet, config) => {
 
   const rawPath = typeof term.path === 'string' && term.path.length > 0 ? term.path : convertSpaceToDash(term.name);
 
@@ -667,7 +692,7 @@ const structureTerm = (term, termSet) => {
 
   const formatted = {
     '@type': 'DefinedTerm',
-    '@id': `${baseUrl}${path}`,
+    '@id': `${config.baseUrl}${path}`,
     name: term.name,
     description: term.def,
     inDefinedTermSet: termSet
@@ -678,7 +703,7 @@ const structureTerm = (term, termSet) => {
   return formatted;
 };
 
-const structureTermSet = termObj => {
+const structureTermSet = (termObj, _config) => {
   /* input:
   {
    url: '',
@@ -692,6 +717,14 @@ const structureTermSet = termObj => {
    ]
   }
   */
+
+  const config = Object.assign({}, {
+    baseUrl: 'https://www.example.com',
+    articlePath: 'post',
+    organization: 'My Organization',
+    logoUrl: 'https://www.my-organization-550x60px-logo.png'
+  }, _config);
+
   const termSetHeader = [{
     '@context': 'http://schema.org/'
   }, {
@@ -701,7 +734,7 @@ const structureTermSet = termObj => {
   }];
 
   const termList = Array.isArray(termObj.list) ? termObj.list.map(t => {
-    return structureTerm(t, termObj.url);
+    return structureTerm(t, termObj.url, config);
   }) : [];
 
   return [...termSetHeader, ...termList];
