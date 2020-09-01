@@ -19,7 +19,9 @@ const parseTextFromHtml = body => {
 
   const bodyArrString2 = bodyArrString1.split('&nbsp;').join(' ');
 
-  return bodyArrString2;
+  const bodyWithoutSpecial = bodyArrString2.split('****').join(' ');
+
+  return bodyWithoutSpecial;
 };
 
 // @@@@@@@@@@@@@@@@@@@@@ NEWS ARTICLE @@@@@@@@@@@@@@@@
@@ -70,7 +72,7 @@ const blogPostExample1 = {
   '@type': 'BlogPosting',
   // this means that this blog post is the main entity of a page
   // list the page (where the blog post is found)
-  mainEntityOfPage:{
+  mainEntityOfPage: {
     '@type':'WebPage',
     '@id':'http://applefostering.co.uk/skills-foster/'
   },
@@ -139,8 +141,8 @@ const structureBlogPost = (data, _config) => {
       height: 630,
       width: 1200,
     },
-    datePublished: data.publlished,
-    dateModified: data.publlished,
+    datePublished: data.published,
+    dateModified: data.published, // COME BACK TO THIS AND TRACK SEPARATELY IF BUTTER WILL NOT ADD THIS FIELD
     author: {
       '@type': 'Person',
       name: `${author.first_name} ${author.last_name}`,
