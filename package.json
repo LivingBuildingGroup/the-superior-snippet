@@ -1,6 +1,6 @@
 {
   "name": "re-struc-ture",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Library for Structured Data",
   "main": "index.js",
   "scripts": {
