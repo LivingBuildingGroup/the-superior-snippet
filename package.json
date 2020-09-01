@@ -1,5 +1,5 @@
 {
-  "name": "structured",
+  "name": "re-struc-ture",
   "version": "1.0.1",
   "description": "Library for Structured Data",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bradcgarner/structured.git"
+    "url": "git+https://github.com/bradcgarner/re-struc-ture.git"
   },
   "keywords": [
     "structured",
@@ -18,9 +18,9 @@
   "author": "Brad C. Garner <brad@bradgarner.com> (http://bradgarner.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bradcgarner/structured/issues"
+    "url": "https://github.com/bradcgarner/re-struc-ture/issues"
   },
-  "homepage": "https://github.com/bradcgarner/structured#readme",
+  "homepage": "https://github.com/bradcgarner/re-struc-ture#readme",
   "peerDependencies": {
     "conjunction-junction": "^3.13.58"
   },
