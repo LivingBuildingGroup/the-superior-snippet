@@ -117,10 +117,11 @@ const structureBlogPost = (data, _config) => {
 
   const config = Object.assign({},
     {
-      baseUrl: 'https://www.example.com',
-      articlePath: 'post',
+      baseUrl:      'https://www.example.com',
+      articlePath:  'post',
       organization: 'My Organization',
-      logoUrl: 'https://www.my-organization-550x60px-logo.png',
+      logoUrl:      'https://www.my-organization-550x60px-logo.png',
+      termPath:     '?term='
     },
     _config);
 
@@ -314,10 +315,11 @@ const structureVideo = (data, isTopLevel=true, _config) => {
 	
   const config = Object.assign({},
     {
-      baseUrl: 'https://www.example.com',
-      articlePath: 'post',
+      baseUrl:      'https://www.example.com',
+      articlePath:  'post',
       organization: 'My Organization',
-      logoUrl: 'https://www.my-organization-550x60px-logo.png',
+      logoUrl:      'https://www.my-organization-550x60px-logo.png',
+      termPath:     '?term='
     },
     _config);
 		
@@ -751,15 +753,13 @@ const terminologyExample1 = [
 
 const structureTerm = (term, termSet, config) => {
 
-  const rawPath = typeof term.path === 'string' &&
+  const path = typeof term.path === 'string' &&
 		term.path.length > 0 ? term.path :
     convertSpaceToDash(term.name);
 
-  const path = `?term=${rawPath}`; // might want to change later vs hard-code
-
   const formatted = {
     '@type': 'DefinedTerm',
-    '@id': `${config.baseUrl}${path}`,
+    '@id': `${config.baseUrl}${config.termPath}${path}`,
     name: term.name,
     description: term.def,
     inDefinedTermSet: termSet
@@ -779,7 +779,7 @@ const structureTermSet = (termObj, _config) => {
 			 {
 				 name: 'Green Roof',
 				 def: '',
-				 path: '?term=green-roof', OPTIONAL
+         path: 'green-roof', OPTIONAL
 			 }
 		 ]
 	 }
@@ -787,10 +787,11 @@ const structureTermSet = (termObj, _config) => {
 
   const config = Object.assign({},
     {
-      baseUrl: 'https://www.example.com',
-      articlePath: 'post',
+      baseUrl:      'https://www.example.com',
+      articlePath:  'post',
       organization: 'My Organization',
-      logoUrl: 'https://www.my-organization-550x60px-logo.png',
+      logoUrl:      'https://www.my-organization-550x60px-logo.png',
+      termPath:     '?term=',
     },
     _config);
 
