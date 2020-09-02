@@ -116,7 +116,7 @@ const structureBlogPost = (data, _config) => {
     articlePath: 'post',
     organization: 'My Organization',
     logoUrl: 'https://www.my-organization-550x60px-logo.png',
-    termPath: '?term='
+    termPathPrefix: '?term='
   }, _config);
 
   const author = data.author || {};
@@ -156,6 +156,84 @@ const structureBlogPost = (data, _config) => {
     description: data.meta_description,
     articleBody
   };
+};
+
+// @@@@@@@@@@@@@@@@@@@ TERMINOLOGY @@@@@@@@@@@@@@@
+
+const terminologyExample1 = [{
+  '@context': 'http://schema.org/'
+}, {
+  '@type': ['DefinedTermSet', 'Book'],
+  '@id': 'http://openjurist.org/dictionary/Ballentine',
+  name: 'Ballentine\'s Law Dictionary'
+}, {
+  '@type': 'DefinedTerm',
+  '@id': 'http://openjurist.org/dictionary/Ballentine/term/calendar-year',
+  name: 'calendar year',
+  description: 'The period from January 1st to December 31st, inclusive, of any year.',
+  inDefinedTermSet: 'http://openjurist.org/dictionary/Ballentine'
+}, {
+  '@type': 'DefinedTerm',
+  '@id': 'http://openjurist.org/dictionary/Ballentine/term/schema',
+  name: 'schema',
+  description: 'A representation of a plan or theory in the form of an outline or model.',
+  inDefinedTermSet: 'http://openjurist.org/dictionary/Ballentine',
+  sameAs: 'https://en.wikipedia.org/wiki/Coal'
+}];
+
+const structureTerm = (term, termSet, config) => {
+
+  const path = typeof term.termPath === 'string' && term.termPath.length > 0 ? term.termPath : convertSpaceToDash(term.termName);
+
+  const formatted = {
+    '@type': 'DefinedTerm',
+    '@id': `${config.baseUrl}${config.termPathPrefix}${path}`,
+    name: term.termName,
+    description: term.termDef,
+    inDefinedTermSet: termSet
+  };
+  if (term.sameAs) {
+    formatted.sameAs = term.sameAs;
+  }
+  return formatted;
+};
+
+const structureTermSet = (termObj, _config) => {
+  /* input:
+  {
+   url: '',
+   name: 'Green Roof Terminology',
+   list: [
+  	 {
+  		 termName: 'Green Roof',
+  		 termDef: '',
+         termPath: 'green-roof', OPTIONAL
+  	 }
+   ]
+  }
+  */
+
+  const config = Object.assign({}, {
+    baseUrl: 'https://www.example.com',
+    articlePath: 'post',
+    organization: 'My Organization',
+    logoUrl: 'https://www.my-organization-550x60px-logo.png',
+    termPathPrefix: '?term='
+  }, _config);
+
+  const termSetHeader = [{
+    '@context': 'http://schema.org/'
+  }, {
+    '@type': ['DefinedTermSet'],
+    '@id': termObj.url,
+    name: termObj.name
+  }];
+
+  const termList = Array.isArray(termObj.list) ? termObj.list.map(t => {
+    return structureTerm(t, termObj.url, config);
+  }) : [];
+
+  return [...termSetHeader, ...termList];
 };
 
 // @@@@@@@@@@@@@@@@@@ FAQ @@@@@@@@@@@@@@@@@@@@@@@@@
@@ -206,12 +284,12 @@ const structureFaqItem = data => {
   /* input: {
     question: '', // just text, no formatting
     answer: { 
-      basic: '',     // can include <br>, <ol>, <ul>, <li>, <strong>
+      answerBasic: '',     // can include <br>, <ol>, <ul>, <li>, <strong>
                      // live site parses; structured data uses verbatim
-  	a1: '',        // E.g. To learn more read // no formatting in any below
-  	href: '',      // https://www.example.com
-  	hrefText: '',  // this article
-  	a2: ''         // about green roof detention.
+  	answera1: '',        // E.g. To learn more read // no formatting in any below
+  	answerHref: '',      // https://www.example.com
+  	answerHrefText: '',  // this article
+  	answerA2: ''         // about green roof detention.
   } // additional text NOT to include in structure data
   } */
 
@@ -221,11 +299,11 @@ const structureFaqItem = data => {
 
   const answer = data.answer;
 
-  if (!answer || typeof answer.basic !== 'string') {
+  if (!answer || typeof answer.answerBasic !== 'string') {
     return null;
   }
 
-  const answerFormatted = 'string' && answer.a1 && answer.href && answer.hrefText ? `${answer.basic} <p>${answer.a1} <a href=${answer.href}>${answer.hrefText}</a> ${answer.a2 || ''}</p>` : answer.basic;
+  const answerFormatted = 'string' && answer.answerA1 && answer.answerHref && answer.answerHrefText ? `${answer.answerBasic} <p>${answer.answerA1} <a href=${answer.answerHref}>${answer.answerHrefText}</a> ${answer.answerA2 || ''}</p>` : answer.answerBasic;
 
   return {
     '@type': 'Question',
@@ -243,12 +321,12 @@ const structureFaqItems = arr => {
   {
       question: '', // just text, no formatting
       answer: { 
-        basic: '',     // can include <br>, <ol>, <ul>, <li>, <strong>
+        answerBasic: '',     // can include <br>, <ol>, <ul>, <li>, <strong>
                       // live site parses; structured data uses verbatim
-        a1: '',        // E.g. To learn more read // no formatting in any below
-        href: '',      // https://www.example.com
-        hrefText: '',  // this article
-        a2: ''         // about green roof detention.
+        answerA1: '',        // E.g. To learn more read // no formatting in any below
+        answerHref: '',      // https://www.example.com
+        answerHrefText: '',  // this article
+        answerA2: ''         // about green roof detention.
       } // additional text NOT to include in structure data
     }
   ] */
@@ -303,7 +381,7 @@ const structureVideo = (data, isTopLevel = true, _config) => {
     articlePath: 'post',
     organization: 'My Organization',
     logoUrl: 'https://www.my-organization-550x60px-logo.png',
-    termPath: '?term='
+    termPathPrefix: '?term='
   }, _config);
 
   const video = {
@@ -661,84 +739,6 @@ const structureHowTo = data => {
       return step;
     });
   }
-};
-
-// @@@@@@@@@@@@@@@@@@@ TERMINOLOGY @@@@@@@@@@@@@@@
-
-const terminologyExample1 = [{
-  '@context': 'http://schema.org/'
-}, {
-  '@type': ['DefinedTermSet', 'Book'],
-  '@id': 'http://openjurist.org/dictionary/Ballentine',
-  name: 'Ballentine\'s Law Dictionary'
-}, {
-  '@type': 'DefinedTerm',
-  '@id': 'http://openjurist.org/dictionary/Ballentine/term/calendar-year',
-  name: 'calendar year',
-  description: 'The period from January 1st to December 31st, inclusive, of any year.',
-  inDefinedTermSet: 'http://openjurist.org/dictionary/Ballentine'
-}, {
-  '@type': 'DefinedTerm',
-  '@id': 'http://openjurist.org/dictionary/Ballentine/term/schema',
-  name: 'schema',
-  description: 'A representation of a plan or theory in the form of an outline or model.',
-  inDefinedTermSet: 'http://openjurist.org/dictionary/Ballentine',
-  sameAs: 'https://en.wikipedia.org/wiki/Coal'
-}];
-
-const structureTerm = (term, termSet, config) => {
-
-  const path = typeof term.path === 'string' && term.path.length > 0 ? term.path : convertSpaceToDash(term.name);
-
-  const formatted = {
-    '@type': 'DefinedTerm',
-    '@id': `${config.baseUrl}${config.termPath}${path}`,
-    name: term.name,
-    description: term.def,
-    inDefinedTermSet: termSet
-  };
-  if (term.sameAs) {
-    formatted.sameAs = term.sameAs;
-  }
-  return formatted;
-};
-
-const structureTermSet = (termObj, _config) => {
-  /* input:
-  {
-   url: '',
-   name: 'Green Roof Terminology',
-   list: [
-  	 {
-  		 name: 'Green Roof',
-  		 def: '',
-         path: 'green-roof', OPTIONAL
-  	 }
-   ]
-  }
-  */
-
-  const config = Object.assign({}, {
-    baseUrl: 'https://www.example.com',
-    articlePath: 'post',
-    organization: 'My Organization',
-    logoUrl: 'https://www.my-organization-550x60px-logo.png',
-    termPath: '?term='
-  }, _config);
-
-  const termSetHeader = [{
-    '@context': 'http://schema.org/'
-  }, {
-    '@type': ['DefinedTermSet'],
-    '@id': termObj.url,
-    name: termObj.name
-  }];
-
-  const termList = Array.isArray(termObj.list) ? termObj.list.map(t => {
-    return structureTerm(t, termObj.url, config);
-  }) : [];
-
-  return [...termSetHeader, ...termList];
 };
 
 // @@@@@@@@@@@@@@@@@@@ NESTED @@@@@@@@@@@@@@@
