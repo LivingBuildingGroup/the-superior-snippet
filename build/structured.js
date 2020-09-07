@@ -752,6 +752,8 @@ const structureHowTo = data => {
       return step;
     });
   }
+
+  return howTo;
 };
 
 // @@@@@@@@@@@@@@@@@@@ NESTED @@@@@@@@@@@@@@@

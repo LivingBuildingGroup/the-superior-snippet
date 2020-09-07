@@ -824,6 +824,8 @@ const structureHowTo = data => {
     });
   }
 
+  return howTo;
+
 };
 
 
