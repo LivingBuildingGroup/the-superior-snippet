@@ -286,7 +286,7 @@ const structureFaqItem = data => {
     answer: { 
       answerBasic: '',     // can include <br>, <ol>, <ul>, <li>, <strong>
                      // live site parses; structured data uses verbatim
-  	answera1: '',        // E.g. To learn more read // no formatting in any below
+  	answerA1: '',        // E.g. To learn more read // no formatting in any below
   	answerHref: '',      // https://www.example.com
   	answerHrefText: '',  // this article
   	answerA2: ''         // about green roof detention.
@@ -656,7 +656,7 @@ const structureHowTo = data => {
       // OPTION 2
   	{
   		name: 'Pull and tighten',
-  		list: itemListElement: [ '' ]
+  		list: [ '' ]
   		url: 'https://example.com/tie#step5'
   		src: 'https://example.com/photos/1x1/photo-step5.jpg',
   		height: 406,
@@ -727,7 +727,20 @@ const structureHowTo = data => {
       }
 
       if (s.text) {
-        step.text = s.text;
+        if (typeof s.text === 'string') {
+          step.text = s.text;
+        } else if (Array.isArray(s.text)) {
+          const textArr = s.text.map(t => {
+            if (typeof t === 'string') {
+              return t;
+            }
+            if (typeof t.text === 'string') {
+              return t.text;
+            }
+            return '';
+          });
+          step.text = textArr.join('');
+        }
       }
       if (s.src) {
         step.image = s.src;
