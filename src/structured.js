@@ -846,6 +846,14 @@ const convertHowToArrToElementsAndSteps = arr => {
       }
       elements.push(element);
       steps.push(s);
+      if(s.src && s.alt){
+        elements.push({
+          element: 'image',
+          src: s.src,
+          alt: s.alt,
+          caption: s.caption,
+        });
+      }
     } else if(s==='STEPS'){
       olIndex = i;
       elements.push('');
