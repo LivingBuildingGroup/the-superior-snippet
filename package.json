@@ -1,6 +1,6 @@
 {
   "name": "the-superior-snippet",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Library for Structured Data",
   "main": "index.js",
   "scripts": {
