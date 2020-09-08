@@ -756,6 +756,44 @@ const structureHowTo = data => {
   return howTo;
 };
 
+const convertHowToArrToElementsAndSteps = arr => {
+  const elements = [];
+  const steps = [];
+  let olIndex;
+  let stepIndex = 1;
+  arr.forEach((s, i) => {
+    if (s.element === 'how-to-step') {
+      const element = Object.assign({}, s, { element: 'p-link' });
+      if (typeof s.name === 'string') {
+        const h3 = {
+          element: 'h3',
+          text: `Step ${stepIndex}: ${s.name}`
+        };
+        elements.push(h3);
+        stepIndex++;
+      }
+      elements.push(element);
+      steps.push(s);
+    } else if (s === 'STEPS') {
+      olIndex = i;
+      elements.push('');
+    } else {
+      elements.push(s);
+    }
+  });
+  if (olIndex) {
+    // should not be 0
+    elements[olIndex] = {
+      element: 'ol',
+      list: steps.map(s => s.name)
+    };
+  }
+  return {
+    elements,
+    steps
+  };
+};
+
 // @@@@@@@@@@@@@@@@@@@ NESTED @@@@@@@@@@@@@@@
 
 const nestedExample1 = {
@@ -789,6 +827,7 @@ module.exports = {
   structureFaqItems,
   structureVideo,
   structureHowTo,
+  convertHowToArrToElementsAndSteps,
   structureTerm,
   structureTermSet,
   structureNested
