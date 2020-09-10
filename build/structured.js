@@ -57,8 +57,8 @@ const structureNewsArticle = data => {
     '@type': 'NewsArticle',
     headline: data.seo_title,
     image: images,
-    datePublished: data.publlished,
-    dateModified: data.publlished
+    datePublished: data.published,
+    dateModified: data.updated || data.published
   };
 };
 
@@ -137,7 +137,7 @@ const structureBlogPost = (data, _config) => {
       width: 1200
     },
     datePublished: data.published,
-    dateModified: data.published, // COME BACK TO THIS AND TRACK SEPARATELY IF BUTTER WILL NOT ADD THIS FIELD
+    dateModified: data.updated || data.published,
     author: {
       '@type': 'Person',
       name: `${author.first_name} ${author.last_name}`
