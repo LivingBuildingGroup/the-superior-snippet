@@ -21,17 +21,17 @@ const parseTextFromHtml = body => {
 
   const bodyWithoutSpecial = bodyArrString2.split('****').join(' ');
 
-  const bodyWithInches = bodyWithoutSpecial.split('&rdquo;').join(' inches');
+  const bodyWithInches = bodyWithoutSpecial.split('&rdquo;)').join('inches)');
 
   const bodyWithSingleQuotes = bodyWithInches.split('&rsquo;').join('\'').split('&lsquo;').join('\'');
 
-  const bodyWithoutQuotes = bodyWithSingleQuotes.split('"').join('');
+  const bodyWithoutQuotes = bodyWithSingleQuotes.split('&rdquo;').join('').split('&ldquo;').join('').split('"').join('');
 
   const bodyWithoutExtraSpaces = bodyWithoutQuotes.split('  ').join(' ').split('  ').join(' ');
 
   const bodyWithoutEllip = bodyWithoutExtraSpaces.split('&hellip;').join('...');
 
-  const bodyWithoutErroneousSpaces = bodyWithoutEllip.split('( ').join('(').split(' )').join(')').split(' .').join('.').split(' !').join('!').split(' ?').join('?');
+  const bodyWithoutErroneousSpaces = bodyWithoutEllip.split('( ').join('(').split(' )').join(')').split(' .').join('.').split(' !').join('!').split(' ?').join('?').split(' ,').join(',');
 
   return bodyWithoutErroneousSpaces;
 };
