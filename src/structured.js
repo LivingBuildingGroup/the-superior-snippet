@@ -15,15 +15,19 @@ const parseTextFromHtml = body => {
     if(b && b !== '\r\n'){
       return true;
     }
-  }).join(' \n');
+  }).join(' ');
 
   const bodyArrString2 = bodyArrString1.split('&nbsp;').join(' ');
 
   const bodyWithoutSpecial = bodyArrString2.split('****').join(' ');
 
-  const bodyWithoutQuotes = bodyWithoutSpecial.split('"').join('');
+  const bodyWithInches = bodyWithoutSpecial.split('&rdquo;').join(' inches');
 
-  return bodyWithoutQuotes;
+  const bodyWithoutQuotes = bodyWithInches.split('"').join('');
+
+  const bodyWithoutExtraSpaces = bodyWithoutQuotes.split('  ').join(' ').split('  ').join(' ');
+
+  return bodyWithoutExtraSpaces;
 };
 
 // @@@@@@@@@@@@@@@@@@@@@ NEWS ARTICLE @@@@@@@@@@@@@@@@
