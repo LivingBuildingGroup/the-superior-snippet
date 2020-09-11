@@ -123,8 +123,8 @@ const structureBlogPost = (data, _config) => {
 
   let articleBody = parseTextFromHtml(data.body);
 
-  if (articleBody.length > 8000) {
-    articleBody = articleBody.slice(0, 8000);
+  if (articleBody.length > 8500) {
+    articleBody = `${articleBody.slice(0, 8500)}...`;
   }
 
   const config = Object.assign({}, {
