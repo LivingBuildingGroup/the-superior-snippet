@@ -25,11 +25,17 @@ const parseTextFromHtml = body => {
 
   const bodyWithInches = bodyWithoutSpecial.split('&rdquo;').join(' inches');
 
-  const bodyWithoutQuotes = bodyWithInches.split('"').join('');
+  const bodyWithSingleQuotes = bodyWithInches.split('&rsquo;').join('\'').split('&lsquo;').join('\'');
+
+  const bodyWithoutQuotes = bodyWithSingleQuotes.split('"').join('');
 
   const bodyWithoutExtraSpaces = bodyWithoutQuotes.split('  ').join(' ').split('  ').join(' ');
 
-  return bodyWithoutExtraSpaces;
+  const bodyWithoutEllip = bodyWithoutExtraSpaces.split('&hellip;').join('...');
+
+  const bodyWithoutErroneousSpaces = bodyWithoutEllip.split('( ').join('(').split(' )').join(')').split(' .').join('.').split(' !').join('!').split(' ?').join('?');
+
+  return bodyWithoutErroneousSpaces;
 };
 
 // @@@@@@@@@@@@@@@@@@@@@ NEWS ARTICLE @@@@@@@@@@@@@@@@
@@ -115,7 +121,11 @@ const structureBlogPost = (data, _config) => {
     return {};
   }
 
-  const articleBody = parseTextFromHtml(data.body);
+  let articleBody = parseTextFromHtml(data.body);
+
+  if (articleBody.length > 8000) {
+    articleBody = articleBody.slice(0, 8000);
+  }
 
   const config = Object.assign({}, {
     baseUrl: 'https://www.example.com',
