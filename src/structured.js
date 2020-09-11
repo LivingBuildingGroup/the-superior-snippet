@@ -21,7 +21,9 @@ const parseTextFromHtml = body => {
 
   const bodyWithoutSpecial = bodyArrString2.split('****').join(' ');
 
-  return bodyWithoutSpecial;
+  const bodyWithoutQuotes = bodyWithoutSpecial.split('"').join('');
+
+  return bodyWithoutQuotes;
 };
 
 // @@@@@@@@@@@@@@@@@@@@@ NEWS ARTICLE @@@@@@@@@@@@@@@@
