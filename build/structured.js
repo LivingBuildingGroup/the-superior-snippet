@@ -5,6 +5,17 @@ var _require = require('conjunction-junction');
 const convertSpaceToDash = _require.convertSpaceToDash;
 
 
+const defaultConfig = {
+  siteName: 'My Site Name',
+  organization: 'My Organization',
+  baseUrl: 'https://www.example.com',
+  logoUrl: 'https://www.my-organization-550x60px-logo.png',
+  articlePath: 'post',
+  articleName: 'Blog',
+  termPathPrefix: '?term=',
+  faqPathPrefix: '?question='
+};
+
 const parseTextFromHtml = body => {
   const bodyArr1 = typeof body === 'string' ? body.split('<') : [];
 
@@ -127,13 +138,7 @@ const structureBlogPost = (data, _config) => {
     articleBody = `${articleBody.slice(0, 8500)}...`;
   }
 
-  const config = Object.assign({}, {
-    baseUrl: 'https://www.example.com',
-    articlePath: 'post',
-    organization: 'My Organization',
-    logoUrl: 'https://www.my-organization-550x60px-logo.png',
-    termPathPrefix: '?term='
-  }, _config);
+  const config = Object.assign({}, defaultConfig, _config);
 
   const author = data.author || {};
 
@@ -229,13 +234,7 @@ const structureTermSet = (termObj, _config) => {
   }
   */
 
-  const config = Object.assign({}, {
-    baseUrl: 'https://www.example.com',
-    articlePath: 'post',
-    organization: 'My Organization',
-    logoUrl: 'https://www.my-organization-550x60px-logo.png',
-    termPathPrefix: '?term='
-  }, _config);
+  const config = Object.assign({}, defaultConfig, _config);
 
   const termSetHeader = [{
     '@context': 'http://schema.org/'
@@ -392,13 +391,7 @@ const videoExample1 = {
 
 const structureVideo = (data, isTopLevel = true, _config) => {
 
-  const config = Object.assign({}, {
-    baseUrl: 'https://www.example.com',
-    articlePath: 'post',
-    organization: 'My Organization',
-    logoUrl: 'https://www.my-organization-550x60px-logo.png',
-    termPathPrefix: '?term='
-  }, _config);
+  const config = Object.assign({}, defaultConfig, _config);
 
   const video = {
     '@type': 'VideoObject',
@@ -790,14 +783,17 @@ const convertHowToArrToElementsAndSteps = arr => {
       }
       elements.push(element);
       steps.push(s);
-      if (s.src && s.alt) {
-        elements.push({
-          element: 'image',
-          src: s.src,
-          alt: s.alt,
-          caption: s.caption
-        });
-      }
+      // p-link allows for extra image immediately below
+      // so do not push it twice
+      // delete entirely later
+      // if(s.src && s.alt){
+      //   elements.push({
+      //     element: 'image',
+      //     src: s.src,
+      //     alt: s.alt,
+      //     caption: s.caption,
+      //   });
+      // }
     } else if (s === 'STEPS') {
       olIndex = i;
       elements.push('');
@@ -815,6 +811,83 @@ const convertHowToArrToElementsAndSteps = arr => {
   return {
     elements,
     steps
+  };
+};
+
+// @@@@@@@@@@@@@@@@@@@ BREADCRUMB @@@@@@@@@@@@@@@
+
+const breadcrumbExample1 = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [{
+    '@type': 'ListItem',
+    position: 1,
+    name: 'Books',
+    item: 'https://example.com/books'
+  }, {
+    '@type': 'ListItem',
+    position: 2,
+    name: 'Authors',
+    item: 'https://example.com/books/authors'
+  }, {
+    '@type': 'ListItem',
+    position: 3,
+    name: 'Ann Leckie',
+    item: 'https://example.com/books/authors/annleckie'
+  }]
+};
+
+const breadcrumbExample2FromSEMrush = {
+  '@context': 'http://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [{
+    '@type': 'ListItem',
+    position: 1,
+    item: {
+      '@id': 'https://www.semrush.com/',
+      name: 'SEMrush'
+    }
+  }, {
+    '@type': 'ListItem',
+    position: 2,
+    item: {
+      '@id': '/blog/',
+      name: 'Blog'
+    }
+  }, {
+    '@type': 'ListItem',
+    position: 3,
+    item: {
+      '@id': '/blog/what-is-schema-beginner-s-guide-to-structured-data/',
+      name: 'What is Schema? Beginner‘s Guide to Structured Data'
+    }
+  }]
+};
+
+const structureBreadcrumb = (data, _config) => {
+  // CURRENTLY ONLY WORKS FOR BLOG POSTS
+
+  const config = Object.assign({}, defaultConfig, _config);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [{
+      '@type': 'ListItem',
+      position: 1,
+      name: config.siteName,
+      item: config.baseUrl
+    }, {
+      '@type': 'ListItem',
+      position: 2,
+      name: config.articleName,
+      item: `${config.baseUrl}/${config.articlePath}`
+    }, {
+      '@type': 'ListItem',
+      position: 3,
+      name: data.seo_title,
+      item: `${config.baseUrl}/${config.articlePath}/${data.slug}`
+    }]
   };
 };
 
@@ -854,5 +927,6 @@ module.exports = {
   convertHowToArrToElementsAndSteps,
   structureTerm,
   structureTermSet,
+  structureBreadcrumb,
   structureNested
 };
